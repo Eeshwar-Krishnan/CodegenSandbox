@@ -1,0 +1,62 @@
+package frc.robot.subsystems.Swerve;
+{{ drive_motor_imports }}
+{{ turn_motor_imports }}
+{{ angle_encoder_imports }}
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.Constants.SwerveConstants.SwerveModuleConstants;
+import frc.robot.Constants;
+
+
+public class SwerveModule {
+{{ drive_motor_variables }}
+{{ turn_motor_variables }}
+{{ angle_encoder_variables }}
+    
+    public SwerveModule(SwerveModuleConstants constants){
+{{ drive_motor_initialize }}
+{{ turn_motor_initialize }}
+{{ angle_encoder_initialize }}
+{% if not attached_encoder %}
+        resynchronizeTurnEncoder();{% endif %}
+    }
+
+    public void setDesiredState(SwerveModuleState state, boolean useOpenLoop) {
+        state.optimize(getModuleAngle());
+{{ turn_motor_setrotation }}
+{{ drive_motor_setspeed }}
+    }
+
+    public Rotation2d getModuleAngle() {
+{% if angle_encoder_getrotation %}{{ angle_encoder_getrotation }}{% else %}{{ turn_motor_getrotation }}{% endif %}
+    }
+
+    private double getWheelVelocity(){
+{{ drive_motor_getwheelvelocity }}
+    }
+
+    private double getWheelPosition(){
+{{ drive_motor_getwheelposition }}
+    }
+
+    public SwerveModuleState getState() {
+        return new SwerveModuleState(
+            getWheelVelocity(),
+            getModuleAngle()
+        );
+    }
+
+    public SwerveModulePosition getPosition() {
+        return new SwerveModulePosition(
+            getWheelPosition(),
+            getModuleAngle()
+        );
+    }
+{% if not attached_encoder %}
+    public void resynchronizeTurnEncoder() {
+        Rotation2d angle = getModuleAngle();
+{{ turn_motor_resynchronizeturnencoder }}
+    }{% endif %}
+}

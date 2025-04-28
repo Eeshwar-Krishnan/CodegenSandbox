@@ -1,0 +1,107 @@
+package frc.robot.subsystems.Swerve;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.Constants.SwerveConstants;
+
+{{ gyro_imports }}
+
+public class Swerve extends SubsystemBase {
+    public SwerveDriveOdometry swerveOdometry;
+    public SwerveModule[] swerveModules;
+
+{{ gyro_variables }}
+
+    public Swerve() {
+{{ gyro_initialize }}
+
+        swerveModules = new SwerveModule[] {
+            new SwerveModule(Constants.SwerveConstants.swerveModuleConstants[0]),
+            new SwerveModule(Constants.SwerveConstants.swerveModuleConstants[1]),
+            new SwerveModule(Constants.SwerveConstants.swerveModuleConstants[2]),
+            new SwerveModule(Constants.SwerveConstants.swerveModuleConstants[3]),
+        };
+
+        SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+            new Translation2d(Constants.SwerveConstants.wheelBase / 2.0, Constants.SwerveConstants.trackWidth / 2.0),
+            new Translation2d(Constants.SwerveConstants.wheelBase / 2.0, -Constants.SwerveConstants.trackWidth / 2.0),
+            new Translation2d(-Constants.SwerveConstants.wheelBase / 2.0, Constants.SwerveConstants.trackWidth / 2.0),
+            new Translation2d(-Constants.SwerveConstants.wheelBase / 2.0, -Constants.SwerveConstants.trackWidth / 2.0));
+
+        swerveOdometry = new SwerveDriveOdometry(kinematics, getGyroAngle(), getModulePositions());
+    }
+
+    public Rotation2d getGyroAngle() {
+{{ gyro_getangle }}
+    }
+
+    public SwerveModulePosition[] getModulePositions(){
+        SwerveModulePosition[] positions = new SwerveModulePosition[4];
+        for(int i = 0; i < swerveModules.length; i ++){
+            positions[i] = swerveModules[i].getPosition();
+        }
+        return positions;
+    }
+
+    public void setModuleStates(SwerveModuleState[] desiredStates) {
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.SwerveConstants.maxSpeed);
+        
+        for(int i = 0; i < swerveModules.length; i ++){
+            swerveModules[i].setDesiredState(desiredStates[i], false);
+        }
+    }
+
+    public SwerveModuleState[] getModuleStates(){
+        SwerveModuleState[] states = new SwerveModuleState[4];
+        for(int i = 0; i < swerveModules.length; i ++){
+            states[i] = swerveModules[i].getState();
+        }
+        return states;
+    }
+
+    public Pose2d getPose() {
+        return swerveOdometry.getPoseMeters();
+    }
+
+    public void setPose(Pose2d pose) {
+        swerveOdometry.resetPosition(getGyroAngle(), getModulePositions(), pose);
+    }
+
+    public Rotation2d getHeading(){
+        return getPose().getRotation();
+    }
+
+    public void setHeading(Rotation2d heading){
+        swerveOdometry.resetPosition(getGyroAngle(), getModulePositions(), new Pose2d(getPose().getTranslation(), heading));
+    }
+
+    public void zeroHeading(){
+        swerveOdometry.resetPosition(getGyroAngle(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d()));
+    }
+{% if not attached_encoder %}
+    public void resynchronizeTurnEncoders(){
+        for(SwerveModule module : swerveModules){
+            module.resynchronizeTurnEncoder();
+        }
+    }
+{% endif %}
+    @Override
+    public void periodic(){
+        swerveOdometry.update(getGyroAngle(), getModulePositions());
+
+        for(int i = 0; i < swerveModules.length; i ++){
+            SwerveModule module = swerveModules[i];
+            SmartDashboard.putNumber("Mod " + i + " Angle", module.getModuleAngle().getDegrees());
+            SmartDashboard.putNumber("Mod " + i + " Angle", module.getPosition().angle.getDegrees());
+            SmartDashboard.putNumber("Mod " + i + " Velocity", module.getState().speedMetersPerSecond);    
+        }
+    }
+}

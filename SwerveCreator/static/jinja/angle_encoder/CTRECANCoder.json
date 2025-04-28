@@ -1,0 +1,6 @@
+{
+    "angle_encoder_imports": "import com.ctre.phoenix6.hardware.CANcoder;",
+    "angle_encoder_variables": "    CANcoder angleEncoder;",
+    "angle_encoder_initialize": "        angleEncoder = new CANcoder(constants.encoderCanID);",
+    "angle_encoder_getrotations": "        return Rotation2d.fromRotations(angleEncoder.getAbsolutePosition().getValueAsDouble());"
+}

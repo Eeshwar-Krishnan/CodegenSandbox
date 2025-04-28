@@ -1,0 +1,8 @@
+{
+    "turn_motor_imports": "import com.ctre.phoenix6.configs.TalonFXConfiguration;\nimport com.ctre.phoenix6.controls.PositionVoltage;\nimport com.ctre.phoenix6.hardware.TalonFX;\nimport com.ctre.phoenix6.signals.NeutralModeValue;",
+    "turn_motor_variables": "    TalonFX turnMotor;\n    private final PositionVoltage anglePosition = new PositionVoltage(0);",
+    "turn_motor_initialize": "        turnMotor = new TalonFX(constants.turnMotorCanID);\n\n        TalonFXConfiguration swerveAngleFXConfig = new TalonFXConfiguration();\n\n        swerveAngleFXConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;\n\n        swerveAngleFXConfig.Feedback.SensorToMechanismRatio = Constants.SwerveConstants.turnRatio;\n        swerveAngleFXConfig.ClosedLoopGeneral.ContinuousWrap = true;\n\n        swerveAngleFXConfig.CurrentLimits.SupplyCurrentLimitEnable = true;\n        swerveAngleFXConfig.CurrentLimits.SupplyCurrentLimit = Constants.SwerveConstants.turnCurrentLimit;\n        swerveAngleFXConfig.CurrentLimits.StatorCurrentLimitEnable = true;\n        swerveAngleFXConfig.CurrentLimits.StatorCurrentLimit = Constants.SwerveConstants.turnCurrentLimit;\n\n        swerveAngleFXConfig.Slot0.kP = Constants.SwerveConstants.turnkP;\n        swerveAngleFXConfig.Slot0.kD = Constants.SwerveConstants.turnkD;\n\n        turnMotor.getConfigurator().apply(swerveAngleFXConfig);",
+    "turn_motor_setrotation": "        turnMotor.setControl(anglePosition.withPosition(state.angle.getRotations()));",
+    "turn_motor_getrotation": "        return Rotation2d.fromRotations(turnMotor.getPosition().getValueAsDouble());",
+    "turn_motor_resynchronizeturnencoder": "        turnMotor.setPosition(angle.getRotations());"
+}

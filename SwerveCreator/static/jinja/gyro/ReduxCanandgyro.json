@@ -1,0 +1,6 @@
+{
+    "gyro_imports": "import com.reduxrobotics.sensors.canandgyro.Canandgyro;",
+    "gyro_variables": "    Canandgyro gyro;",
+    "gyro_initialize": "        gyro = new Canandgyro(SwerveConstants.gyroId);",
+    "gyro_getangle": "        return gyro.getRotation2d();"
+}

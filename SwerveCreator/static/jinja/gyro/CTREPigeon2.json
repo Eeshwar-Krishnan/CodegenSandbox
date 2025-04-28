@@ -1,0 +1,6 @@
+{
+    "gyro_imports": "import com.ctre.phoenix6.hardware.Pigeon2;",
+    "gyro_variables": "    Pigeon2 gyro;",
+    "gyro_initialize": "        gyro = new Pigeon2(SwerveConstants.gyroId);",
+    "gyro_getangle": "        return gyro.getRotation2d();"
+}

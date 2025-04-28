@@ -1,0 +1,6 @@
+{
+    "angle_encoder_imports": "import com.reduxrobotics.sensors.canandmag.Canandmag;",
+    "angle_encoder_variables": "    Canandmag angleEncoder;",
+    "angle_encoder_initialize": "        angleEncoder = new Canandmag(constants.encoderCanID);",
+    "angle_encoder_getrotations": "        return Rotation2d.fromRotations(angleEncoder.getAbsPosition());"
+}
